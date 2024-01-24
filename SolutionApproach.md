@@ -60,55 +60,27 @@ Evaluation Criteria  <br>
 **quiz_id** : Foreign key referencing the quiz for which the score is recorded. <br>
 **score** : The score obtained by the participant in the quiz. <br>
 
-### Relationship 
-quiz (1) <--> (N) question      <br>
-admin (1) <--> (N) quiz         <br>
-participant (1) <--> (N) score  <br>
-quiz (1) <--> (N) score         <br>
 
 # End Points Design 
+### Admin Endpoints
+**Create Admin:** : `POST /admins`     <br>
+**Get Admin Profile:** : `GET /admins/{admin_id}`     <br>
+**Create Quiz:**  `POST /quizzes`      <br>
+**Update Quiz:** : `PUT /quizzes/{quiz_id}`     <br>
+**Delete Quiz:** : `DELETE /quizzes/{quiz_id}`     <br>
+**Add Question to Quiz:** : `POST /quizzes/{quiz_id}/questions`      <br>
+**Remove Question from Quiz:** : `DELETE /quizzes/{quiz_id}/questions/{question_id}`      <br>
 
-Certainly! To design the API endpoints for your quiz system, you can follow RESTful principles and create endpoints that allow interaction with the different resources in your system. Below are some suggested API endpoints:
+### Participant Endpoints
+**Create Participant:** : `POST /participants`      <br>
+**Get Participant Profile:** : `GET /participants/{participant_id}`      <br>
+**Take Quiz:** : `POST /participants/{participant_id}/quizzes/{quiz_id}/take`     <br>
+**Get Quiz Scores for Participant:** : `GET /participants/{participant_id}/scores`      <br>
+**Get Quiz Scores:** : `GET /quizzes/{quiz_id}/scores`   <br>
+**Submit Quiz Answers:** : `POST /quizzes/{quiz_id}/submit`    <br>
 
-1. **Admin Endpoints:**
-   - **Create Admin:** : `POST /admins`
+### General Quiz endpoints for all users:
+**Get All Quizzes:** : `GET /quizzes`   <br>
+**Get Quiz Details:** : `GET /quizzes/{quiz_id}`    <br>
 
-   - **Get Admin Profile:** : `GET /admins/{admin_id}`
 
-   - **Create Quiz:**  `POST /quizzes`
-
-   - **Get Quiz Details:** : `GET /quizzes/{quiz_id}`
-
-   - **Update Quiz:** : `PUT /quizzes/{quiz_id}`
-
-   - **Delete Quiz:** : `DELETE /quizzes/{quiz_id}`
-
-   - **Add Question to Quiz:** : `POST /quizzes/{quiz_id}/questions`
-
-   - **Remove Question from Quiz:** : `DELETE /quizzes/{quiz_id}/questions/{question_id}`
-
-2. **Participant Endpoints:**
-   - **Create Participant:** : `POST /participants`
-
-   - **Get Participant Profile:** : `GET /participants/{participant_id}`
-
-   - **Take Quiz:** : `POST /participants/{participant_id}/quizzes/{quiz_id}/take`
-
-   - **Get Quiz Scores for Participant:** : `GET /participants/{participant_id}/scores`
-
-3. **General Quiz Endpoints:**
-
-   - **Get All Quizzes:** : `GET /quizzes`
-      Valid for Both Admin and Participants
-
-   - **Get Quiz Details:** : `GET /quizzes/{quiz_id}`
-      Valid for Both Admin and Participants
-
-   - **Get Quiz Questions:** : `GET /quizzes/{quiz_id}/questions`
-      Valid for Both Admin and Participants
-      
-   - **Submit Quiz Answers:** : `POST /quizzes/{quiz_id}/submit`
-      Valid for Participants
-
-   - **Get Quiz Scores:** : `GET /quizzes/{quiz_id}/scores`
-      Valid for Both Admin and Participants
