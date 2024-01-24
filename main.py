@@ -1,10 +1,14 @@
 from fastapi import FastAPI
 from _models import Admin 
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
+from db import _setup, models
 from utilities import is_username_taken,is_email_taken
 
 app = FastAPI()
+
+models.Base.metadata.create_all(_setup.engine)
+
+
 @app.get('/')
 async def root():
     return {"Data":['data1', 'data2']}
