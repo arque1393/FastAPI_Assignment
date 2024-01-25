@@ -10,8 +10,8 @@ def is_username_taken(username: str) -> bool:
     # TODO 
 
 
-def is_email_taken(email: EmailStr) -> bool:
-    # Replace this with your logic to check if the email is already taken
-    # TODO
-    # For example, query your database
-    return False
+def is_email_taken(email: EmailStr, model,session) -> bool:
+    '''email is email string object of fastapi for email validate, 
+model is any database schema model that are derrived from Base'''
+    existing_object = session.query(model).filter_by(email=email).first()
+    return existing_object is not None
