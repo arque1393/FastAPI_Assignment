@@ -18,17 +18,13 @@ class AdminShow(Admin):
 
 class Quiz(BaseModel):
     title: str
-    description: str = None
+    description: str
 
 class QuizShow(Quiz):
-    quiz_id: int
-    d_at: datetime
-    
     class Config:
         orm_mode = True
 
 class Question(BaseModel):
-    quiz_id: int
     text: str
     option1: str
     option2: str
@@ -37,6 +33,11 @@ class Question(BaseModel):
     correct_option: str
 
 class QuestionShow(Question):    
+    text: str
+    option1: str
+    option2: str
+    option3: str
+    option4: str
     class Config:
         orm_mode = True
 
