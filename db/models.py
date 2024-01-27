@@ -20,9 +20,8 @@ class Quiz(Base):
     description = Column(String)
     # created_at = Column(DateTime, default=datetime.utcnow)
     admin = relationship('Admin', back_populates='quiz')
-    question = relationship('Question', back_populates='quiz')
+    question= relationship("Question", back_populates="quiz", cascade="all, delete-orphan")
     scores = relationship('Score', back_populates='quiz')
-
 class Question(Base):
     __tablename__ = 'question'
     
