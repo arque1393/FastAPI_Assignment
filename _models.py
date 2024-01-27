@@ -1,11 +1,4 @@
 from pydantic import BaseModel, EmailStr
-from typing import List
-from datetime import datetime
-
-
-from pydantic import BaseModel, EmailStr
-from typing import List
-
 class Admin(BaseModel):
     password: str
     email: EmailStr
@@ -20,7 +13,7 @@ class Quiz(BaseModel):
     title: str
     description: str
 
-class QuizShow(Quiz):
+class QuizShow(BaseModel):
     class Config:
         orm_mode = True
 
@@ -32,7 +25,7 @@ class Question(BaseModel):
     option4: str
     correct_option: str
 
-class QuestionShow(Question):    
+class QuestionShow(BaseModel):    
     text: str
     option1: str
     option2: str
@@ -40,12 +33,15 @@ class QuestionShow(Question):
     option4: str
     class Config:
         orm_mode = True
+class UserAnswers(BaseModel):
+    question_id:int
+    answer_option:str
 
 class Participant(BaseModel):
     password: str
     email: EmailStr
 
-class ParticipantShow(Participant):
+class ParticipantShow(BaseModel):
     participant_id: int
     
     class Config:
@@ -56,6 +52,7 @@ class Score(BaseModel):
     quiz_id: int
     score: int
 
-class ScoreShow(Score):   
+class ScoreShow(BaseModel):   
+    score:int
     class Config:
         orm_mode = True
