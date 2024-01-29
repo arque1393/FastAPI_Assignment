@@ -42,7 +42,7 @@ async def create_quiz(id:int, quiz:Quiz, session:Session = Depends(_setup.get_db
 
 @app.get('/quizzes/{quiz_id}',response_model=QuizShow, tags=['Quiz'])
 async def update_quize(quiz_id:int, session:Session = Depends(_setup.get_db)):
-    get_quiz = session.query(models.Quiz).filter(models.Quiz.quiz_id == quiz_id and models.Quiz.admin_id == admin_id).first()
+    get_quiz = session.query(models.Quiz).filter(models.Quiz.quiz_id == quiz_id).first()
     if not get_quiz:
         raise HTTPException(status_code = 404, detail = f'Quiz with ID {quiz_id} not found.')
     num_of_question = session.query(models.Question).filter(models.Question.quiz_id==quiz_id).count()
