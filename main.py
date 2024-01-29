@@ -7,7 +7,8 @@ from fastapi import FastAPI, HTTPException
 from db import _setup, models
 from utilities import is_email_taken,evalute_score
 from sqlalchemy.orm import Session
-
+''' Main Module
+All API path are defined here '''
 app = FastAPI()
 models.Base.metadata.create_all(_setup.engine)
 

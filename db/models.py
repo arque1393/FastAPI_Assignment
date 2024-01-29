@@ -3,7 +3,8 @@ from sqlalchemy.orm import relationship
 from datetime import datetime
 from db._setup import Base
 
-
+'''This module contains All the SQLAlchemy Database Schemas or Model
+'''
 class Admin(Base): 
     __tablename__ = "admin"
     admin_id = Column(Integer, primary_key= True)

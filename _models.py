@@ -1,4 +1,7 @@
 from pydantic import BaseModel, EmailStr
+
+''' This module Contains Required Pydentic Model for data validastion
+'''
 class Admin(BaseModel):
     password: str
     email: EmailStr
