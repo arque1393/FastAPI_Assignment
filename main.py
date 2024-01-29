@@ -151,6 +151,4 @@ async def show_score(participant_id:int,quiz_id:int,session:Session = Depends(_s
     scors = session.query(models.Score).filter(
         models.Score.participant_id==participant_id and models.Score.quiz_id==quiz_id).all()
     return scors
-# Get Quiz Scores for Participant: : GET /participants/{participant_id}/scores
-# Get Quiz Scores: : GET /quizzes/{quiz_id}/scores
-# Submit Quiz Answers: : POST /quizzes/{quiz_id}/submit
+
