@@ -1,6 +1,7 @@
 from typing import List
 from fastapi import FastAPI, Depends
 from _models import (Admin, Participant, Quiz,QuizShow,
+                     ParticipantShow,QuestionShow_with_id,
                       Question, QuestionShow,UserAnswers,ScoreShow)
 from fastapi import FastAPI, HTTPException
 from db import _setup, models
@@ -38,11 +39,13 @@ async def create_quiz(id:int, quiz:Quiz, session:Session = Depends(_setup.get_db
     session.refresh(new_quiz)
     return {'status':'success'}
 
-@app.get('/admins/{admin_id}/quizzes/{quiz_id}',response_model=QuizShow, tags=['Admin'])
-async def update_quize(admin_id:int, quiz_id:int, session:Session = Depends(_setup.get_db)):
+@app.get('/quizzes/{quiz_id}',response_model=QuizShow, tags=['Quiz'])
+async def update_quize(quiz_id:int, session:Session = Depends(_setup.get_db)):
     get_quiz = session.query(models.Quiz).filter(models.Quiz.quiz_id == quiz_id and models.Quiz.admin_id == admin_id).first()
     if not get_quiz:
         raise HTTPException(status_code = 404, detail = f'Quiz with ID {quiz_id} not found.')
+    num_of_question = session.query(models.Question).filter(models.Question.quiz_id==quiz_id).count()
+    get_quiz.totalMarks = num_of_question * 1 # marks of each question is 1. for now
     return get_quiz
 
 @app.put('/admins/{admin_id}/quizzes/{quiz_id}',response_model=QuizShow, tags=['Admin'])
@@ -54,7 +57,7 @@ async def update_quize(admin_id:int, quiz_id:int, quiz: Quiz, session:Session = 
         session.commit()
         session.refresh(update_quiz)
     return update_quiz
-@app.delete('/quizzes/{quiz_id}')
+@app.delete('/quizzes/{quiz_id}', tags=['Quiz'])
 def delete_quiz(quiz_id: int, session: Session = Depends(_setup.get_db)):    
     quiz = session.query(models.Quiz).filter(models.Quiz.quiz_id == quiz_id).first()
     if quiz:
@@ -63,29 +66,34 @@ def delete_quiz(quiz_id: int, session: Session = Depends(_setup.get_db)):
         return {'message': f'Deleted Quiz: ID {quiz_id}'}
     raise HTTPException(status_code=404, detail=f'Quiz with ID {quiz_id} not found.')
 
-@app.post('/quizzes/{quiz_id}/question')
+@app.post('/quizzes/{quiz_id}/question', tags=['Quiz'])
 async def create_question(quiz_id:int, question:Question, session:Session = Depends(_setup.get_db)):
     new_question = models.Question(**question.dict(),quiz_id=quiz_id)
     session.add(new_question)
     session.commit()
     session.refresh(new_question)
     return {'status':'success'}
-@app.get('/quizzes/{quiz_id}/question', response_model=List[QuestionShow])
+@app.get('/quizzes', response_model= List[Quiz], tags=['Quiz'])
+async def get_quiz(session:Session=Depends(_setup.get_db)):
+    quizzes = session.query(models.Quiz).all()
+    if quizzes:
+        return quizzes
+@app.get('/quizzes/{quiz_id}/question', response_model=List[QuestionShow], tags=['Quiz'])
 async def create_question(quiz_id:int,
                           session:Session = Depends(_setup.get_db)):
     quiz_question_list = session.query(models.Question).filter(models.Question.quiz_id == quiz_id).all()
     return quiz_question_list
 
-@app.get('/question',response_model=List[QuestionShow])
+@app.get('/question',response_model=List[QuestionShow], tags=['Quiz'])
 async def get_all_questions(session:Session=Depends(_setup.get_db)):
     all_question = session.query(models.Question).all()
     if all_question:
         return all_question
     raise HTTPException("No Question Found")
  
-@app.delete('/question/{question_id}')
+@app.delete('/question/{question_id}',tags=['Quiz'])
 def delete_quiz(question_id: int, session: Session = Depends(_setup.get_db)):    
-    question = session.query(Question).filter(Quiz.id == question_id).first()
+    question = session.query(models.Question).filter(models.Question.question_id == question_id).first()
     if question:
         session.delete(question)
         session.commit()
@@ -113,7 +121,7 @@ async def get_participants(session:Session = Depends(_setup.get_db)):
         raise HTTPException(status_code = 404, detail = 'ID does not exist')
     return participants
 
-@app.get('/participants/{id}',  tags=['Participant'])
+@app.get('/participants/{id}', response_model=ParticipantShow, tags=['Participant'])
 async def get_participants(id:int,  session:Session = Depends(_setup.get_db)):
     # view individual Participants
     participant = session.query(models.Participant).filter(models.Participant.participant_id == id).first()
@@ -121,14 +129,10 @@ async def get_participants(id:int,  session:Session = Depends(_setup.get_db)):
         raise HTTPException(status_code = 404, detail = 'Participant ID does not exist')
     return participant
 
-@app.post('/participants/{participant_id}/quizzes/{quiz_id}/take', tags=['Participant'])
+@app.post('/participants/{participant_id}/quizzes/{quiz_id}/take', response_model=List[QuestionShow_with_id],tags=['Participant'])
 async def view_questions(participant_id:int,quiz_id:int,session:Session = Depends(_setup.get_db)):
     quiz_question_list = session.query(models.Question).filter(models.Question.quiz_id == quiz_id).all()
-    return {
-        'participant_id' : participant_id,
-        'quiz_id' :quiz_id,
-        'questions':  quiz_question_list
-    }
+    return quiz_question_list
 
 @app.post('/participants/{participant_id}/quizzes/{quiz_id}/submit',response_model=ScoreShow, tags=['Participant'])
 async def submit_answers(participant_id:int,quiz_id:int,
